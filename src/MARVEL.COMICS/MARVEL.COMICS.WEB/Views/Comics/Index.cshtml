@@ -1,0 +1,59 @@
+﻿@model List<ComicViewModel>
+
+@{
+    ViewData["Title"] = "Comics";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-center">
+            <form class="form-inline">
+                <label class="sr-only" for="formInputTitle">Title</label>
+                <input type="text" class="form-control mb-2 mr-sm-2" id="formInputTitle" placeholder="X-Force (2004) #4">
+
+                <button type="button" onclick="proccessSearch()" class="btn btn-primary mb-2">Search</button>
+            </form>
+        </div>
+    </div>
+    @foreach (var item in Model)
+    {
+        <div class="col-12 col-sm-6 col-md-4 p-3">
+            <div class="card" style="width: 18rem;">
+                <img src="@item.Thumbnail" class="card-img-top" alt="@item.Title">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Title</h5>
+                    <p class="card-text">@item.Description</p>
+                    <button onclick="addToReadList(@item.Id)" class="btn btn-primary">Add to read list</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model.Any() == false)
+    {
+        <div class="d-flex justify-content-center">
+            <div class="alert alert-info" role="alert">
+                No items found.
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    function proccessSearch() {
+        if ($("#formInputTitle").val()) {
+            location.href = "/comics?title=" + $("#formInputTitle").val();
+        } else {
+            $(".error-message").text("Fill in the field before searching.")
+            $(".error-message-area").removeClass("d-none").addClass("d-flex");
+        }
+    }
+
+    function addToReadList(id) {
+        $.ajax({
+            url: "/comics/addread/" + id,
+        }).done(function () {
+            window.location.href = "/comics/readlist";
+        });
+    }
+</script>
